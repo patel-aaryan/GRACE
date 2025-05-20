@@ -1,119 +1,101 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import Link from "next/link";
-import Counter from "@/components/Counter";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { AnimatedBackground } from "@/components/animated-background";
 
 export default function Home() {
   return (
     <MainLayout>
-      <section className="py-12 md:py-24 lg:py-32 w-full">
-        <div className="container mx-auto px-4 md:px-6 max-w-full">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                Welcome to Web
-              </h1>
-              <p className="max-w-[700px] text-muted-foreground md:text-xl">
-                A modern Next.js application with TypeScript and Shadcn UI
-              </p>
+      <AnimatedBackground />
+      <section className="relative w-full min-h-[90vh] overflow-hidden">
+        <Card className="w-full max-w-full shadow-none border-0 bg-transparent">
+          <CardContent className="p-0">
+            <div className="grid grid-cols-12 min-h-[90vh]">
+              <div className="col-span-12 md:col-span-4 p-8 md:p-12 lg:p-16 flex items-center">
+                <div className="space-y-8 max-w-xl">
+                  <div>
+                    <h2 className="text-2xl font-semibold mb-2">
+                      Hi I&apos;m Grace!
+                    </h2>
+                    <p className="text-lg text-gray-400">
+                      <span className="font-medium">G</span>uided
+                      <span className="font-medium"> R</span>esponsive
+                      <span className="font-medium"> A</span>ssistant for <br />
+                      <span className="font-medium"> C</span>ompanionship &
+                      <span className="font-medium"> E</span>ngagement
+                    </p>
+                  </div>
+
+                  <h1 className="text-3xl font-bold">
+                    Your friendly companion,{" "}
+                    <span className="text-primary">any time</span> you need{" "}
+                    <span className="text-primary">to talk.</span>
+                  </h1>
+
+                  <p className="text-gray-400">
+                    I&apos;m here to chat, answer questions, or just keep you
+                    company. My goal is to make your day a little brighter and
+                    help reduce feelings of loneliness.
+                  </p>
+
+                  <Button
+                    asChild
+                    size="lg"
+                    className="font-medium rounded-full px-10 py-6"
+                  >
+                    <Link href="/chat">Get Started</Link>
+                  </Button>
+                </div>
+              </div>
+
+              <div className="col-span-12 md:col-span-8 relative">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  {/* Avatar placeholder - to be replaced with actual 3D model */}
+                  <div className="w-full h-full flex items-center justify-center">
+                    <p className="text-lg p-8 opacity-75">
+                      (3-D Grace head waves, says &ldquo;Welcome back,
+                      Mary!&rdquo;)
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <Button asChild size="lg">
-                <Link href="/dashboard">Get Started</Link>
-              </Button>
-              <Button variant="outline" size="lg">
-                Learn More
-              </Button>
-            </div>
-            <div className="mt-8">
-              <Counter />
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </section>
 
-      <section className="py-12 md:py-24 lg:py-32 bg-muted/50 w-full">
-        <div className="container mx-auto px-4 md:px-6 max-w-full">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-                Features
-              </h2>
-              <p className="max-w-[700px] text-muted-foreground md:text-xl">
-                Explore the powerful features of this application
-              </p>
-            </div>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Next.js</CardTitle>
-                  <CardDescription>
-                    App Router & React Server Components
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p>
-                    Built with the latest Next.js features for optimal
-                    performance and developer experience.
-                  </p>
+      <section className="container max-w-5xl mx-auto pb-12 pt-4 px-4">
+        <Card className="border-none shadow-sm">
+          <CardHeader>
+            <h2 className="text-2xl font-bold text-center">How it Works</h2>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap justify-center md:gap-8">
+              <Card className="border-none bg-transparent shadow-none">
+                <CardContent className="flex items-center gap-2 p-4">
+                  <span className="text-primary font-bold">1</span>
+                  <span className="text-primary font-medium">-</span>
+                  <span>Speak naturally</span>
                 </CardContent>
-                <CardFooter>
-                  <Button variant="ghost" asChild>
-                    <Link href="https://nextjs.org/docs">Learn More</Link>
-                  </Button>
-                </CardFooter>
               </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>TypeScript</CardTitle>
-                  <CardDescription>Type-safe Development</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p>
-                    Fully typed codebase for better reliability and developer
-                    productivity.
-                  </p>
+              <Card className="border-none bg-transparent shadow-none">
+                <CardContent className="flex items-center gap-2 p-4">
+                  <span className="text-primary font-bold">2</span>
+                  <span className="text-primary font-medium">-</span>
+                  <span>See & hear Grace reply</span>
                 </CardContent>
-                <CardFooter>
-                  <Button variant="ghost" asChild>
-                    <Link href="https://www.typescriptlang.org/docs">
-                      Learn More
-                    </Link>
-                  </Button>
-                </CardFooter>
               </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Shadcn UI</CardTitle>
-                  <CardDescription>
-                    Beautiful & Accessible Components
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p>
-                    Beautifully designed components that are accessible and
-                    customizable.
-                  </p>
+              <Card className="border-none bg-transparent shadow-none">
+                <CardContent className="flex items-center gap-2 p-4">
+                  <span className="text-primary font-bold">3</span>
+                  <span className="text-primary font-medium">-</span>
+                  <span>Continue your conversation naturally</span>
                 </CardContent>
-                <CardFooter>
-                  <Button variant="ghost" asChild>
-                    <Link href="https://ui.shadcn.com">Learn More</Link>
-                  </Button>
-                </CardFooter>
               </Card>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </section>
     </MainLayout>
   );

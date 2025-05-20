@@ -1,10 +1,16 @@
-import { configureStore } from "@reduxjs/toolkit";
-import counterReducer from "./features/counter/counterSlice";
+import { configureStore, createSlice } from "@reduxjs/toolkit";
+
+// Create a placeholder slice to avoid empty reducer object
+const placeholderSlice = createSlice({
+  name: "placeholder",
+  initialState: {},
+  reducers: {},
+});
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
-      counter: counterReducer,
+      placeholder: placeholderSlice.reducer,
     },
   });
 };

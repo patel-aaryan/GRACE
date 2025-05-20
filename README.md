@@ -1,1 +1,1 @@
-# G.R.A.C.E.
+# G.R.A.C.E. - Guided Responsive Assistant for Companionship & Engagement

@@ -9,19 +9,19 @@ export function Footer() {
         </div>
         <div className="flex items-center gap-4">
           <Link
-            href="/terms"
+            href="/terms" // doens't exist yet
             className="text-sm text-muted-foreground hover:text-foreground"
           >
             Terms
           </Link>
           <Link
-            href="/privacy"
+            href="/privacy" // doens't exist yet
             className="text-sm text-muted-foreground hover:text-foreground"
           >
             Privacy
           </Link>
           <Link
-            href="/contact"
+            href="/contact" // doens't exist yet
             className="text-sm text-muted-foreground hover:text-foreground"
           >
             Contact

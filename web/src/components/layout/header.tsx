@@ -165,9 +165,9 @@ function MobileNav() {
           <span className="sr-only">Toggle Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[280px] p-6">
+      <SheetContent side="right" className="w-[240px] p-6">
         <SheetHeader className="mb-5">
-          <SheetTitle className="text-left">GRACE</SheetTitle>
+          <SheetTitle className="text-center">GRACE</SheetTitle>
         </SheetHeader>
         <nav className="flex flex-col gap-5">
           <Link
@@ -219,20 +219,6 @@ function MobileNav() {
   );
 }
 
-function AuthButtons() {
-  return (
-    <nav className="flex items-center space-x-2">
-      <ThemeToggle />
-      <Button variant="outline" size="sm" asChild>
-        <Link href="/login">Login</Link>
-      </Button>
-      <Button size="sm" asChild>
-        <Link href="/signup">Sign up</Link>
-      </Button>
-    </nav>
-  );
-}
-
 export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -244,13 +230,12 @@ export function Header() {
           <DesktopNav />
         </div>
 
-        {/* Mobile Navigation */}
-        <div className="md:hidden">
-          <MobileNav />
-        </div>
-
         <div className="flex flex-1 items-center justify-end space-x-4">
-          <AuthButtons />
+          <ThemeToggle />
+
+          <div className="md:hidden">
+            <MobileNav />
+          </div>
         </div>
       </div>
     </header>
