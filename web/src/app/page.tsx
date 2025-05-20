@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
+import Counter from "@/components/Counter";
 
 export default function Home() {
   return (
@@ -31,6 +32,9 @@ export default function Home() {
               <Button variant="outline" size="lg">
                 Learn More
               </Button>
+            </div>
+            <div className="mt-8">
+              <Counter />
             </div>
           </div>
         </div>
