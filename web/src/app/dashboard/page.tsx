@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardContent,
@@ -23,8 +25,11 @@ import {
   User,
   Users,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
+  const router = useRouter();
+
   return (
     <section className="py-4 w-full">
       <div className="container mx-auto px-4 md:px-6 max-w-7xl">
@@ -168,6 +173,7 @@ export default function DashboardPage() {
                       variant="ghost"
                       size="sm"
                       className="w-full text-xs"
+                      onClick={() => router.push("/history")}
                     >
                       View Mood History
                     </Button>

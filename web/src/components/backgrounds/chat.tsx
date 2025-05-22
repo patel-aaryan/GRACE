@@ -3,32 +3,29 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 
-interface ChatBackground {
+interface ChatBackgroundProps {
   children?: React.ReactNode;
 }
 
-interface Particle {
+interface Circle {
   id: number;
-  x: number;
-  y: number;
-  size: number;
-  vx: number;
-  vy: number;
-  side: "top" | "right" | "bottom" | "left";
-  progress: number;
-  progressSpeed: number;
-  amplitude: number;
-  hue: number;
+  radius: number;
+  targetRadius: number;
+  growthRate: number;
   alpha: number;
+  hue: number;
+  pulseSpeed: number;
+  pulsePhase: number;
 }
 
-export function ChatBackground({ children }: ChatBackground) {
+export function ChatBackground({ children }: ChatBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const particlesRef = useRef<Particle[]>([]);
+  const circlesRef = useRef<Circle[]>([]);
   const frameRef = useRef<number>(0);
   const mouseRef = useRef({ x: 0, y: 0, active: false });
+  const centerRef = useRef({ x: 0, y: 0 });
 
   // Use state for canvas dimensions
   const [dimensions, setDimensions] = useState({
@@ -43,6 +40,10 @@ export function ChatBackground({ children }: ChatBackground) {
         width: window.innerWidth,
         height: window.innerHeight,
       });
+      centerRef.current = {
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
+      };
     };
 
     window.addEventListener("resize", handleResize);
@@ -67,55 +68,27 @@ export function ChatBackground({ children }: ChatBackground) {
     canvas.width = dimensions.width;
     canvas.height = dimensions.height;
 
-    // Generate initial particles along the sides
-    const numParticles = 80;
-    const sides: Array<"top" | "right" | "bottom" | "left"> = [
-      "top",
-      "right",
-      "bottom",
-      "left",
-    ];
+    // Set center point
+    centerRef.current = {
+      x: dimensions.width / 2,
+      y: dimensions.height / 2,
+    };
 
-    particlesRef.current = Array.from({ length: numParticles }, (_, id) => {
-      const side = sides[Math.floor(Math.random() * sides.length)];
-      const progress = Math.random();
-      const size = 2 + Math.random() * 3;
-      let x = 0,
-        y = 0;
+    // Generate initial circles
+    const numCircles = 15;
+    const maxRadius = Math.max(dimensions.width, dimensions.height) * 0.8;
 
-      // Position particle based on which side it belongs to
-      switch (side) {
-        case "top":
-          x = dimensions.width * progress;
-          y = 0 + size + Math.random() * 60;
-          break;
-        case "right":
-          x = dimensions.width - size - Math.random() * 60;
-          y = dimensions.height * progress;
-          break;
-        case "bottom":
-          x = dimensions.width * progress;
-          y = dimensions.height - size - Math.random() * 60;
-          break;
-        case "left":
-          x = 0 + size + Math.random() * 60;
-          y = dimensions.height * progress;
-          break;
-      }
-
+    circlesRef.current = Array.from({ length: numCircles }, (_, id) => {
+      const radius = (id / numCircles) * maxRadius;
       return {
         id,
-        x,
-        y,
-        size,
-        vx: 0,
-        vy: 0,
-        side,
-        progress,
-        progressSpeed: 0.0005 + Math.random() * 0.001,
-        amplitude: 10 + Math.random() * 20,
+        radius,
+        targetRadius: radius,
+        growthRate: 0.01 + Math.random() * 0.03,
+        alpha: 0.05 + Math.random() * 0.15,
         hue: 190 + Math.random() * 30,
-        alpha: 0.3 + Math.random() * 0.4,
+        pulseSpeed: 0.005 + Math.random() * 0.01,
+        pulsePhase: Math.random() * Math.PI * 2,
       };
     });
 
@@ -139,104 +112,84 @@ export function ChatBackground({ children }: ChatBackground) {
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Update and draw particles
-      const particles = particlesRef.current;
-      const baseColor =
-        theme === "dark" ? "rgba(110, 200, 255," : "rgba(0, 100, 180,";
+      // Create radial gradient for background
+      const gradient = ctx.createRadialGradient(
+        centerRef.current.x,
+        centerRef.current.y,
+        0,
+        centerRef.current.x,
+        centerRef.current.y,
+        dimensions.width * 0.7
+      );
 
-      // Draw connections first (so they appear behind particles)
-      ctx.lineWidth = 0.5;
-      for (let i = 0; i < particles.length; i++) {
-        const p1 = particles[i];
+      if (theme === "dark") {
+        gradient.addColorStop(0, "rgba(30, 60, 100, 0.6)");
+        gradient.addColorStop(1, "rgba(10, 20, 40, 0)");
+      } else {
+        gradient.addColorStop(0, "rgba(180, 220, 255, 0.6)");
+        gradient.addColorStop(1, "rgba(240, 248, 255, 0)");
+      }
 
-        // Only draw lines between some particles to reduce visual clutter
-        if (Math.random() > 0.97) {
-          for (let j = i + 1; j < particles.length; j++) {
-            const p2 = particles[j];
-            const dx = p2.x - p1.x;
-            const dy = p2.y - p1.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Only connect nearby particles
-            if (distance < 120 && p1.side === p2.side) {
-              const alpha =
-                Math.max(0, 0.6 - distance / 120) * p1.alpha * p2.alpha;
+      // Calculate center shift based on mouse position
+      let centerX = centerRef.current.x;
+      let centerY = centerRef.current.y;
 
-              ctx.beginPath();
-              ctx.strokeStyle = `${baseColor}${alpha})`;
+      if (mouseRef.current.active) {
+        const mouseX = mouseRef.current.x;
+        const mouseY = mouseRef.current.y;
+        const dx = mouseX - centerX;
+        const dy = mouseY - centerY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const maxShift = 80;
 
-              // Draw a bezier curve for more organic connection
-              const midX = (p1.x + p2.x) / 2;
-              const midY = (p1.y + p2.y) / 2 - 10 + Math.random() * 20;
-
-              ctx.moveTo(p1.x, p1.y);
-              ctx.quadraticCurveTo(midX, midY, p2.x, p2.y);
-              ctx.stroke();
-            }
-          }
+        if (dist > 0) {
+          const shift = Math.min(dist * 0.1, maxShift);
+          centerX += (dx / dist) * shift;
+          centerY += (dy / dist) * shift;
         }
       }
 
-      // Update and draw each particle
-      particles.forEach((p) => {
-        // Update progress for movement along the side
-        p.progress += p.progressSpeed;
-        if (p.progress > 1) p.progress = 0;
+      // Update and draw circles
+      const circles = circlesRef.current;
+      const baseColor =
+        theme === "dark" ? "rgba(100, 180, 255," : "rgba(30, 120, 210,";
 
-        // Calculate position based on side and progress
-        let targetX = p.x,
-          targetY = p.y;
-        const perpOffset = Math.sin(p.progress * Math.PI * 4) * p.amplitude;
+      circles.forEach((circle, index) => {
+        // Update circle pulse
+        circle.pulsePhase += circle.pulseSpeed;
+        const pulseFactor = 1 + Math.sin(circle.pulsePhase) * 0.1;
 
-        switch (p.side) {
-          case "top":
-            targetX = dimensions.width * p.progress;
-            targetY = 0 + p.size + Math.abs(perpOffset);
-            break;
-          case "right":
-            targetX = dimensions.width - p.size - Math.abs(perpOffset);
-            targetY = dimensions.height * p.progress;
-            break;
-          case "bottom":
-            targetX = dimensions.width * (1 - p.progress);
-            targetY = dimensions.height - p.size - Math.abs(perpOffset);
-            break;
-          case "left":
-            targetX = 0 + p.size + Math.abs(perpOffset);
-            targetY = dimensions.height * (1 - p.progress);
-            break;
+        // Calculate actual radius with pulse
+        const actualRadius = circle.radius * pulseFactor;
+
+        // Draw the circle
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, actualRadius, 0, Math.PI * 2);
+        ctx.lineWidth = 1 + (index / circles.length) * 2;
+        ctx.strokeStyle = `${baseColor}${
+          circle.alpha * (1 - index / circles.length)
+        })`;
+        ctx.stroke();
+
+        // Occasionally add some glow
+        if (Math.random() > 0.7) {
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, actualRadius, 0, Math.PI * 2);
+          ctx.lineWidth = 3 + Math.random() * 2;
+          ctx.strokeStyle = `${baseColor}${circle.alpha * 0.5})`;
+          ctx.stroke();
         }
 
-        // Attraction to mouse if active
-        if (mouseRef.current.active) {
-          const mouseX = mouseRef.current.x;
-          const mouseY = mouseRef.current.y;
-          const dx = mouseX - p.x;
-          const dy = mouseY - p.y;
-          const mouseDistance = Math.sqrt(dx * dx + dy * dy);
-
-          if (mouseDistance < 150) {
-            const force = (1 - mouseDistance / 150) * 0.3;
-            p.vx += (dx * force) / mouseDistance;
-            p.vy += (dy * force) / mouseDistance;
+        // Add growing effect for outer circles
+        if (index > circles.length * 0.6) {
+          circle.radius += circle.growthRate;
+          if (circle.radius > maxRadius) {
+            circle.radius = (index / circles.length) * (maxRadius * 0.3);
           }
         }
-
-        // Gentle attraction back to frame position
-        p.vx += (targetX - p.x) * 0.03;
-        p.vy += (targetY - p.y) * 0.03;
-
-        // Apply velocity with damping
-        p.vx *= 0.92;
-        p.vy *= 0.92;
-        p.x += p.vx;
-        p.y += p.vy;
-
-        // Draw the particle
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `${baseColor}${p.alpha})`;
-        ctx.fill();
       });
 
       frameRef.current = requestAnimationFrame(animate);
