@@ -1,91 +1,134 @@
-# G.R.A.C.E API
+# Database Migrations with Alembic
 
-## Setup
+This project uses Alembic for database migrations. This document explains how to use the migration system.
 
-### 1. Environment Setup
+## Overview
+
+Alembic is used to:
+
+- Track changes to database schema
+- Create migration scripts
+- Apply migrations
+- Rollback migrations if needed
+
+## Prerequisites
+
+Make sure you have all required dependencies installed:
+
+```bash
+pip install alembic sqlalchemy psycopg2-binary
+```
+
+## Management Script
+
+We've created a `manage.py` script that handles both server operations and database migrations.
+
+## Using the Migration System
+
+### Creating a New Migration
+
+To create a new migration after making changes to models:
 
 ```powershell
-# Create and activate virtual environment
-python -m venv venv
-.\venv\Scripts\Activate.ps1  # Windows
-# source venv/bin/activate  # Linux/macOS
-
-# Install dependencies
-pip install -r requirements.txt
+python manage.py migrate -m "Description of the changes"
 ```
 
-### 2. Database Configuration
+This will create a new migration file in the `alembic/versions` directory.
 
-Create a `.env` file in the root directory with your database connection details:
+### Applying Migrations
 
-```
-DATABASE_URL=postgresql://username:password@localhost/dbname
-```
-
-### 3. Run Database Migrations
+To apply all pending migrations:
 
 ```powershell
-python run.py migrate "Initial migration"
+python manage.py upgrade
 ```
 
-## Running the Application
-
-### Start the API Server
+To upgrade to a specific revision:
 
 ```powershell
-python run.py server
+python manage.py upgrade <revision_id>
 ```
 
-Options:
+### Rolling Back Migrations
 
-- `--host HOST` - Specify host (default: 127.0.0.1)
-- `--port PORT` - Specify port (default: 8000)
-- `--no-reload` - Disable auto-reload
-
-Example:
+To rollback the most recent migration:
 
 ```powershell
-python run.py server --host 0.0.0.0 --port 5000
+python manage.py downgrade
 ```
 
-### Apply Database Migrations
-
-When you make changes to your database models:
+To rollback to a specific revision:
 
 ```powershell
-python run.py migrate "Description of your changes"
+python manage.py downgrade <revision_id>
 ```
 
-### Help
+### Migration History
 
-Display available commands:
+To view migration history:
 
 ```powershell
-python run.py help
+python manage.py history
 ```
 
-## Development Workflow
+### Current Migration
 
-1. Update models in `datastores/models.py`
-2. Run migration: `python run.py migrate "Description of changes"`
-3. Implement new endpoints in `routes/` directory
-4. Register routes in `main.py`
-5. Run server: `python run.py server`
+To view the current migration:
 
-## Project Structure
-
+```powershell
+python manage.py current
 ```
-api/
-├── alembic/                # Database migration scripts
-├── controllers/            # Business logic controllers
-├── datastores/             # Database models and connection
-├── routes/                 # API endpoints
-├── scripts/                # Utility scripts
-├── services/               # Service layer
-├── validators/             # Input validation
-├── .env                    # Environment variables (not in git)
-├── alembic.ini             # Alembic configuration
-├── main.py                 # FastAPI application
-├── run.py                  # Command runner script
-└── README.md               # This file
+
+### Setup Database
+
+To initialize the database and apply all migrations:
+
+```powershell
+python manage.py setup
 ```
+
+## Making Schema Changes
+
+1. Modify the models in `database/models.py`
+2. Create a migration: `python manage.py migrate -m "Description"`
+3. Review the generated migration script in `alembic/versions/`
+4. Apply the migration: `python manage.py upgrade`
+
+## Running the Server
+
+To run the API server:
+
+```powershell
+python manage.py server
+```
+
+Server options:
+
+- `--host`: Host to bind (default: 0.0.0.0)
+- `--port`: Port to bind (default: 8000)
+- `--no-reload`: Disable auto-reload
+
+## Common Issues and Solutions
+
+### "Target database is not up to date"
+
+Run `python manage.py upgrade` to apply all pending migrations.
+
+### "Can't locate revision identified by..."
+
+Ensure you're using the correct revision ID. Use `python manage.py history` to see all revisions.
+
+### "Table already exists" during migration
+
+This can happen if you've already created tables manually. You can:
+
+1. Drop the tables and re-run migrations
+2. Or create a new migration that skips creating existing tables
+
+## Best Practices
+
+1. Always run migrations in development before deploying to production
+2. Back up your database before applying migrations in production
+3. Keep migrations small and focused on specific changes
+4. Test both upgrade and downgrade paths
+5. Add clear descriptions to migrations using the `-m` option

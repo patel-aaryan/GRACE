@@ -1,5 +1,5 @@
 from fastapi import status
-from datastores.db import engine
+from database.db import engine
 from sqlalchemy.exc import OperationalError
 from sqlalchemy import text
 
