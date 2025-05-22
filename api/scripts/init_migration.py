@@ -1,15 +1,18 @@
 """Initialize database and create initial migration"""
-import os
-from sqlalchemy import create_engine
-from alembic.config import Config
-from alembic import command
 from dotenv import load_dotenv
+from alembic import command
+from alembic.config import Config
+from sqlalchemy import create_engine
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Load environment variables
 load_dotenv()
 
 # Create a migration
-config = Config("alembic.ini")
+config = Config(os.path.join(os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__))), "alembic.ini"))
 
 # First, stamp the database with the 'base' revision (empty database)
 try:
