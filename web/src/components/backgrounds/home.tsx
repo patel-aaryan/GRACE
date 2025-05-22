@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 
-interface AnimatedBackgroundProps {
+interface HomeBackgroundProps {
   children?: React.ReactNode;
 }
 
@@ -40,7 +40,7 @@ interface ConnectionShape {
 
 type ShapeType = BubbleShape | WaveShape | ConnectionShape;
 
-export function AnimatedBackground({ children }: AnimatedBackgroundProps) {
+export function HomeBackground({ children }: HomeBackgroundProps) {
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
 

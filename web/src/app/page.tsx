@@ -1,13 +1,12 @@
-import { MainLayout } from "@/components/layout/main-layout";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { AnimatedBackground } from "@/components/animated-background";
+import { HomeBackground } from "@/components/backgrounds";
 
 export default function Home() {
   return (
-    <MainLayout>
-      <AnimatedBackground />
+    <>
+      <HomeBackground />
       <section className="relative w-full min-h-[90vh] overflow-hidden">
         <Card className="w-full max-w-full shadow-none border-0 bg-transparent">
           <CardContent className="p-0">
@@ -97,6 +96,6 @@ export default function Home() {
           </CardContent>
         </Card>
       </section>
-    </MainLayout>
+    </>
   );
 }
