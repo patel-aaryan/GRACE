@@ -19,9 +19,24 @@ Make sure you have all required dependencies installed:
 pip install alembic sqlalchemy psycopg2-binary
 ```
 
-## Management Script
+## Management Scripts
 
-We've created a `manage.py` script that handles both server operations and database migrations.
+Our script structure:
+
+- Main management script: `run.py` (in root api directory)
+- Utility scripts: `scripts/create_migration.py`, `scripts/init_db.py`, etc.
+
+You can use the main script directly:
+
+```powershell
+python run.py server  # Run the API server
+```
+
+Or use the convenient wrapper script:
+
+```powershell
+python run_script.py run server  # Run the API server
+```
 
 ## Using the Migration System
 
@@ -30,7 +45,7 @@ We've created a `manage.py` script that handles both server operations and datab
 To create a new migration after making changes to models:
 
 ```powershell
-python manage.py migrate -m "Description of the changes"
+python run.py migrate -m "Description of the changes"
 ```
 
 This will create a new migration file in the `alembic/versions` directory.
@@ -40,13 +55,13 @@ This will create a new migration file in the `alembic/versions` directory.
 To apply all pending migrations:
 
 ```powershell
-python manage.py upgrade
+python run.py upgrade
 ```
 
 To upgrade to a specific revision:
 
 ```powershell
-python manage.py upgrade <revision_id>
+python run.py upgrade <revision_id>
 ```
 
 ### Rolling Back Migrations
@@ -54,13 +69,13 @@ python manage.py upgrade <revision_id>
 To rollback the most recent migration:
 
 ```powershell
-python manage.py downgrade
+python run.py downgrade
 ```
 
 To rollback to a specific revision:
 
 ```powershell
-python manage.py downgrade <revision_id>
+python run.py downgrade <revision_id>
 ```
 
 ### Migration History
@@ -68,7 +83,7 @@ python manage.py downgrade <revision_id>
 To view migration history:
 
 ```powershell
-python manage.py history
+python run.py history
 ```
 
 ### Current Migration
@@ -76,7 +91,7 @@ python manage.py history
 To view the current migration:
 
 ```powershell
-python manage.py current
+python run.py current
 ```
 
 ### Setup Database
@@ -84,22 +99,22 @@ python manage.py current
 To initialize the database and apply all migrations:
 
 ```powershell
-python manage.py setup
+python run.py setup
 ```
 
 ## Making Schema Changes
 
 1. Modify the models in `database/models.py`
-2. Create a migration: `python manage.py migrate -m "Description"`
+2. Create a migration: `python run.py migrate -m "Description"`
 3. Review the generated migration script in `alembic/versions/`
-4. Apply the migration: `python manage.py upgrade`
+4. Apply the migration: `python run.py upgrade`
 
 ## Running the Server
 
 To run the API server:
 
 ```powershell
-python manage.py server
+python run.py server
 ```
 
 Server options:
@@ -112,11 +127,11 @@ Server options:
 
 ### "Target database is not up to date"
 
-Run `python manage.py upgrade` to apply all pending migrations.
+Run `python run.py upgrade` to apply all pending migrations.
 
 ### "Can't locate revision identified by..."
 
-Ensure you're using the correct revision ID. Use `python manage.py history` to see all revisions.
+Ensure you're using the correct revision ID. Use `python run.py history` to see all revisions.
 
 ### "Table already exists" during migration
 
