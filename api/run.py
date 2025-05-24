@@ -7,6 +7,7 @@ import uvicorn
 from dotenv import load_dotenv
 from alembic.config import Config
 from alembic import command
+from database.reset_db import reset_database
 
 # Load environment variables
 load_dotenv()
@@ -102,6 +103,10 @@ def main():
     subparsers.add_parser(
         "setup", help="Initialize database and apply all migrations")
 
+    # Reset command
+    subparsers.add_parser(
+        "reset", help="Reset database by dropping all tables and recreating them")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -113,6 +118,8 @@ def main():
         run_server(host=args.host, port=args.port, reload=not args.no_reload)
     elif args.command == "setup":
         setup_database()
+    elif args.command == "reset":
+        reset_database()
     else:
         run_migrations(args)
 

@@ -1,10 +1,13 @@
-from sqlalchemy import Column, Integer, String, Boolean, Float, Date, ForeignKey, Text, ARRAY, TIMESTAMP, JSON
+from sqlalchemy import Column, Integer, String, Boolean, Float, Date, ForeignKey, Text, ARRAY, TIMESTAMP
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 import uuid
 from .db import Base
+
+# Import vector type from pgvector
+from pgvector.sqlalchemy import Vector
 
 
 class User(Base):
@@ -13,7 +16,7 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
-    date_of_birth = Column(Date)
+    dob = Column(Date)
     phone_number = Column(String)
     preferred_speech_speed = Column(Float, default=1.0)
     preferred_avatar_type = Column(String, default="3D")
@@ -21,9 +24,6 @@ class User(Base):
     caregiver_id = Column(UUID(as_uuid=True), ForeignKey(
         "caregivers.id"), nullable=True)
     last_login = Column(TIMESTAMP(timezone=True))
-    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
-    updated_at = Column(TIMESTAMP(timezone=True),
-                        server_default=func.now(), onupdate=func.now())
 
     # Relationships
     caregiver = relationship("Caregiver", back_populates="users_managed")
@@ -40,9 +40,6 @@ class Caregiver(Base):
     phone_number = Column(String)
     relationship_type = Column(String)
     receive_alerts = Column(Boolean, default=True)
-    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
-    updated_at = Column(TIMESTAMP(timezone=True),
-                        server_default=func.now(), onupdate=func.now())
 
     # Relationships
     users_managed = relationship("User", back_populates="caregiver")
@@ -65,9 +62,6 @@ class Session(Base):
     activity_type = Column(String)
     activity_id = Column(UUID(as_uuid=True), ForeignKey(
         "activities.id"), nullable=True)
-    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
-    updated_at = Column(TIMESTAMP(timezone=True),
-                        server_default=func.now(), onupdate=func.now())
 
     # Relationships
     user = relationship("User", back_populates="sessions")
@@ -90,8 +84,7 @@ class ChatTurn(Base):
     speaker = Column(String, nullable=False)  # User/Assistant
     message = Column(Text, nullable=False)
     audio_url = Column(String)
-    # This would be vector(1536) in PostgreSQL with pgvector
-    embedding = Column(String)
+    embedding = Column(Vector(1536))
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
 
     # Relationships
@@ -103,7 +96,6 @@ class Topic(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, unique=True, nullable=False)
-    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
 
     # Relationships
     sessions = relationship(
@@ -118,7 +110,6 @@ class SessionTopic(Base):
         "sessions.id"), nullable=False)
     topic_id = Column(UUID(as_uuid=True), ForeignKey(
         "topics.id"), nullable=False)
-    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
 
 
 class Note(Base):
@@ -130,9 +121,6 @@ class Note(Base):
     title = Column(String)
     content = Column(Text)
     is_important = Column(Boolean, default=False)
-    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
-    updated_at = Column(TIMESTAMP(timezone=True),
-                        server_default=func.now(), onupdate=func.now())
 
     # Relationships
     session = relationship("Session", back_populates="notes")
@@ -146,9 +134,6 @@ class Activity(Base):
     name = Column(String, nullable=False)
     description = Column(Text)
     data = Column(JSONB, default={})
-    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
-    updated_at = Column(TIMESTAMP(timezone=True),
-                        server_default=func.now(), onupdate=func.now())
 
     # Relationships
     sessions = relationship("Session", back_populates="activity")
@@ -168,7 +153,6 @@ class SessionActivity(Base):
     end_time = Column(TIMESTAMP(timezone=True))
     score = Column(Integer)
     results = Column(JSONB, default={})
-    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
 
     # Relationships
     session = relationship("Session", back_populates="session_activities")
