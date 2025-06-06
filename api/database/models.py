@@ -1,21 +1,22 @@
 from sqlalchemy import Column, Integer, String, Boolean, Float, Date, ForeignKey, Text, ARRAY, TIMESTAMP
 from sqlalchemy.dialects.postgresql import UUID, JSONB
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
-import uuid
-from .db import Base
-
-# Import vector type from pgvector
 from pgvector.sqlalchemy import Vector
+import uuid
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
 
 
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name = Column(String, nullable=False)
+    id = Column(UUID(as_uuid=True), primary_key=True,
+                default=uuid.uuid4, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    full_name = Column(String, index=True, nullable=True)
     dob = Column(Date)
     phone_number = Column(String)
     preferred_speech_speed = Column(Float, default=1.0)

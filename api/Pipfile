@@ -4,22 +4,22 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-email-validator = "*"
-sqlalchemy-utils = "*"
-alembic = "==1.12.0"
-fastapi = "==0.103.1"
-uvicorn = "==0.23.2"
-sqlalchemy = "==2.0.20"
-psycopg2-binary = "==2.9.7"
-python-dotenv = "==1.0.0"
-pydantic = "==2.3.0"
-python-jose = "==3.3.0"
-passlib = "==1.7.4"
-bcrypt = "==4.0.1"
-pytest = "==7.4.2"
-httpx = "==0.24.1"
-python-multipart = "==0.0.6"
-pgvector = "==0.2.3"
+fastapi = "*"
+uvicorn = "*"
+sqlalchemy = "*"
+psycopg2 = "*"
+python-dotenv = "*"
+pydantic = "*"
+python-jose = {extras = ["cryptography"], version = "*"}
+passlib = {extras = ["bcrypt"], version = "*"}
+python-multipart = "*"
+alembic = "*"
+bcrypt = "*"
+pytest = "*"
+httpx = "*"
+typer = "*"
+sqlmodel = "*"
+pgvector = "*"
 
 [dev-packages]
 

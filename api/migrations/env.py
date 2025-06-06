@@ -1,39 +1,35 @@
-from database.models import User, Caregiver, Session, ChatTurn, Topic, SessionTopic, Note, Activity, SessionActivity, Medication, MedicationReminder
-from database.db import Base
-import os
-import sys
 from logging.config import fileConfig
+import os
+from dotenv import load_dotenv
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-
 from alembic import context
-from dotenv import load_dotenv
+from database.models import Base
 
-# Add the parent directory to sys.path
-sys.path.insert(0, os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..')))
-
-# Load environment variables from .env
+# Load environment variables from .env file
 load_dotenv()
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-# Override the sqlalchemy.url with the value from DATABASE_URL
-config.set_main_option('sqlalchemy.url', os.getenv(
-    'DATABASE_URL', 'postgresql://postgres:postgres@localhost/grace_db'))
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if DATABASE_URL is None:
+    raise ValueError("DATABASE_URL is not set")
+
+config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Import all models for Alembic to detect
-
 # add your model's MetaData object here
 # for 'autogenerate' support
+# from myapp import mymodel
+# target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

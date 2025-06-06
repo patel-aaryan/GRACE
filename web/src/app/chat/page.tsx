@@ -34,10 +34,6 @@ export default function ChatPage() {
               <CurrentTime />
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
-                Mood Check-in
-              </Button>
-
               <Link href="/activities">
                 <Button variant="default" size="sm">
                   Start Activity...
