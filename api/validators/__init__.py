@@ -10,7 +10,6 @@ from .models import (
     MedicationBase, MedicationCreate, MedicationUpdate, Medication,
     MedicationReminderBase, MedicationReminderCreate, MedicationReminderUpdate, MedicationReminder
 )
-from .health_validator import HealthResponse
 
 __all__ = [
     'UserBase', 'UserCreate', 'UserUpdate', 'User',
@@ -22,6 +21,5 @@ __all__ = [
     'ActivityBase', 'ActivityCreate', 'ActivityUpdate', 'Activity',
     'SessionActivityBase', 'SessionActivityCreate', 'SessionActivityUpdate', 'SessionActivity',
     'MedicationBase', 'MedicationCreate', 'MedicationUpdate', 'Medication',
-    'MedicationReminderBase', 'MedicationReminderCreate', 'MedicationReminderUpdate', 'MedicationReminder',
-    'HealthResponse'
+    'MedicationReminderBase', 'MedicationReminderCreate', 'MedicationReminderUpdate', 'MedicationReminder'
 ]

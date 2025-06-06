@@ -1,3 +1,2 @@
-from .auth_controller import AuthController
-
-__all__ = ['AuthController']
+# Empty __init__.py - no controllers to export
+__all__ = []

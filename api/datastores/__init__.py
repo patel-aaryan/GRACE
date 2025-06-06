@@ -1,3 +1,2 @@
-from .user_datastore import UserDatastore
-
-__all__ = ['UserDatastore']
+# Empty __init__.py - no datastores to export
+__all__ = []

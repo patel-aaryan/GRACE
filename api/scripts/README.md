@@ -180,16 +180,15 @@ python scripts/migrate.py --help
 
 ## server.py
 
-A comprehensive server management script for running GRACE backend services. Handles starting, stopping, and monitoring the FastAPI gateway service.
+A server management script for running the GRACE FastAPI backend with proper signal handling and graceful shutdown.
 
 ### Features
 
-- **Multi-Service Management**: Start individual services or all services at once
 - **Graceful Shutdown**: Proper signal handling for clean service termination
-- **Process Monitoring**: Detects when services crash and provides feedback
-- **Environment Validation**: Checks for required files and directories
-- **Background Mode**: Run services in background with process management
-- **Development Support**: Built-in reload and development mode options
+- **Development Mode**: Auto-reload for development (default)
+- **Production Mode**: Run without auto-reload for production
+- **Environment Validation**: Checks for required configuration files
+- **Clear Status Messages**: Shows server URLs and status
 
 ### Requirements
 
@@ -200,40 +199,22 @@ A comprehensive server management script for running GRACE backend services. Han
 
 ### Usage
 
-#### Start Default API Service
+#### Start in Development Mode (default)
 
-Start the FastAPI gateway service:
+Start the FastAPI server with auto-reload enabled:
 
 ```bash
 cd api
 python scripts/server.py
 ```
 
-#### Start Specific Service
+#### Start in Production Mode
 
-Start a particular service:
-
-```bash
-cd api
-python scripts/server.py --service api
-```
-
-#### Start All Services
-
-Start all GRACE backend services:
+Start the server without auto-reload:
 
 ```bash
 cd api
-python scripts/server.py --all
-```
-
-#### List Available Services
-
-Show all available services and their configurations:
-
-```bash
-cd api
-python scripts/server.py --list
+python scripts/server.py --prod
 ```
 
 #### Show Help
@@ -247,58 +228,54 @@ python scripts/server.py --help
 
 ### Command Line Options
 
-| Option            | Description                                |
-| ----------------- | ------------------------------------------ |
-| `--service`, `-s` | Start a specific service (api)             |
-| `--all`, `-a`     | Start all services in background           |
-| `--list`, `-l`    | List available services and their commands |
-| `--dev`           | Run in development mode (with reload)      |
-| `--help`, `-h`    | Show help message and exit                 |
+| Option         | Description                             |
+| -------------- | --------------------------------------- |
+| `--prod`       | Run in production mode (no auto-reload) |
+| `--help`, `-h` | Show help message and exit              |
 
-### Available Services
+### Server Details
 
-| Service | Description            | Default Port | Command                     |
-| ------- | ---------------------- | ------------ | --------------------------- |
-| `api`   | FastAPI Gateway Server | 8000         | `uvicorn main:app --reload` |
+| Property     | Value                                                  |
+| ------------ | ------------------------------------------------------ |
+| Default Port | 8000                                                   |
+| Default Host | 0.0.0.0 (accessible from any network interface)        |
+| API Docs     | http://localhost:8000/docs                             |
+| Command      | `uvicorn main:app --reload --host 0.0.0.0 --port 8000` |
 
 ### Examples
 
 1. **Development workflow**:
 
    ```bash
-   # Start API service with auto-reload
-   python scripts/server.py --service api
+   # Start server with auto-reload for development
+   python scripts/server.py
    ```
 
-2. **Check service configuration**:
-
+2. **Production deployment**:
    ```bash
-   # List available services
-   python scripts/server.py --list
+   # Start server without auto-reload
+   python scripts/server.py --prod
    ```
 
 ### How It Works
 
-1. **Validation**: Checks that you're in the correct directory and required files exist
-2. **Service Configuration**: Loads predefined service configurations
-3. **Process Management**: Starts processes with proper environment setup
-4. **Signal Handling**: Registers handlers for graceful shutdown (Ctrl+C, SIGTERM)
-5. **Monitoring**: Watches running processes and reports status changes
+1. **Validation**: Checks that you're in the correct directory and .env file exists
+2. **Process Management**: Starts uvicorn with proper environment setup
+3. **Signal Handling**: Registers handlers for graceful shutdown (Ctrl+C, SIGTERM)
+4. **Status Display**: Shows server URLs and running status
 
 ### Process Management
 
-- **Graceful Shutdown**: Services receive SIGTERM first, then SIGKILL if needed
-- **Background Mode**: When using `--all`, services run in background with output capture
-- **Process Monitoring**: Detects crashed services and reports exit codes
-- **Clean Exit**: All processes are properly terminated when script exits
+- **Graceful Shutdown**: Server receives SIGTERM first, then SIGKILL if needed
+- **Clean Exit**: Process is properly terminated when script exits
+- **Status Messages**: Clear feedback about server state
 
 ### Environment Setup
 
 The script automatically:
 
-- Sets up proper working directories for each service
-- Loads environment variables from `.env` files
-- Validates required files exist before starting services
+- Loads environment variables from `.env` file
+- Validates required files exist before starting
 - Provides warnings for missing configuration files
 
 ### Troubleshooting
@@ -310,31 +287,12 @@ The script automatically:
 
 **"Command not found: uvicorn"**
 
-- Install FastAPI dependencies: `pip install uvicorn fastapi`
+- Install FastAPI dependencies: `pipenv install uvicorn`
 - Or install all project dependencies: `pipenv install`
 
-**"Service directory not found"**
-
-- Check that all service directories exist as configured
-- Adjust service paths in the script if your project structure differs
-
-**Services crash on startup**
+**Server crashes on startup**
 
 - Check that all dependencies are installed
-- Verify environment variables are properly set
-- Check service logs for specific error messages
-
-### Customization
-
-To add or modify services, edit the `services` dictionary in the `ServerManager` class:
-
-```python
-self.services = {
-    'your_service': {
-        'command': ['your', 'command', 'here'],
-        'description': 'Your Service Description',
-        'cwd': './path/to/service',
-        'env_file': '.env'
-    }
-}
-```
+- Verify environment variables are properly set in `.env`
+- Check server logs for specific error messages
+- Ensure port 8000 is not already in use

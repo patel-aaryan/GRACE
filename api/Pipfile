@@ -20,6 +20,7 @@ httpx = "*"
 typer = "*"
 sqlmodel = "*"
 pgvector = "*"
+supabase = "*"
 
 [dev-packages]
 

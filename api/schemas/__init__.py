@@ -1,15 +1,2 @@
-from .auth_schemas import (
-    UserCreate,
-    UserLogin,
-    Token,
-    TokenData,
-    UserResponse
-)
-
-__all__ = [
-    'UserCreate',
-    'UserLogin',
-    'Token',
-    'TokenData',
-    'UserResponse'
-]
+# Empty __init__.py - no schemas to export
+__all__ = []

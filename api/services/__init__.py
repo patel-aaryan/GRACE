@@ -1,3 +1,2 @@
-from .auth_service import AuthService
-
-__all__ = ['AuthService']
+# Empty __init__.py - no services to export
+__all__ = []
