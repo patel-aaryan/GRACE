@@ -8,7 +8,7 @@ GRACE reduces loneliness for older adults, socially-isolated people, and their c
 
 ## Project Structure
 
-- `/api` - Backend API (Fastify + Node.js)
+- `/api` - Backend API (FastAPI)
 - `/web` - Frontend application (Next.js)
 
 ## Database Management
