@@ -17,8 +17,8 @@ SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 
 # API Settings
-API_V1_STR = "/api/v1"
 PROJECT_NAME = "GRACE API"
+API_V1_STR = "/api/v1"
 ALGORITHM = "HS256"
 
 
@@ -36,8 +36,8 @@ class Settings:
     SUPABASE_URL: str = SUPABASE_URL
 
     # API Settings
-    API_V1_STR: str = API_V1_STR
     PROJECT_NAME: str = PROJECT_NAME
+    API_V1_STR: str = API_V1_STR
     ALGORITHM: str = ALGORITHM
 
 

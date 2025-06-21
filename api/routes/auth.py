@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from api.core.auth import require_user, get_current_user_id, JWTTokenPayload
-from api.schemas.auth import UserProfile
+from core.auth import require_user, get_current_user_id, JWTTokenPayload
+from schemas.auth import UserProfile
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 

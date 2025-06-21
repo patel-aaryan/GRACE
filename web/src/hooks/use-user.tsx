@@ -21,14 +21,10 @@ export function useUser() {
     getUser();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setUser(session?.user ?? null);
-      }
+      async (event, session) => setUser(session?.user ?? null)
     );
 
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
+    return () => authListener.subscription.unsubscribe();
   }, [supabase]);
 
   return { user, isLoading };

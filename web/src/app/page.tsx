@@ -38,13 +38,23 @@ export default function Home() {
                     help reduce feelings of loneliness.
                   </p>
 
-                  <Button
-                    asChild
-                    size="lg"
-                    className="font-medium rounded-full px-10 py-6"
-                  >
-                    <Link href="/chat">Get Started</Link>
-                  </Button>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Button
+                      asChild
+                      size="lg"
+                      className="font-medium rounded-full px-10 py-6"
+                    >
+                      <Link href="/chat">Get Started</Link>
+                    </Button>
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="lg"
+                      className="font-medium rounded-full px-10 py-6"
+                    >
+                      <Link href="/auth/login">Sign In</Link>
+                    </Button>
+                  </div>
                 </div>
               </div>
 
