@@ -9,8 +9,8 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-class User(Base):
-    __tablename__ = "users"
+class Profile(Base):
+    __tablename__ = "profiles"
 
     id = Column(UUID(as_uuid=True), primary_key=True,
                 default=uuid.uuid4, index=True)
@@ -27,9 +27,9 @@ class User(Base):
     last_login = Column(TIMESTAMP(timezone=True))
 
     # Relationships
-    caregiver = relationship("Caregiver", back_populates="users_managed")
-    sessions = relationship("Session", back_populates="user")
-    medications = relationship("Medication", back_populates="user")
+    caregiver = relationship("Caregiver", back_populates="profiles_managed")
+    sessions = relationship("Session", back_populates="profile")
+    medications = relationship("Medication", back_populates="profile")
 
 
 class Caregiver(Base):
@@ -43,15 +43,15 @@ class Caregiver(Base):
     receive_alerts = Column(Boolean, default=True)
 
     # Relationships
-    users_managed = relationship("User", back_populates="caregiver")
+    profiles_managed = relationship("Profile", back_populates="caregiver")
 
 
 class Session(Base):
     __tablename__ = "sessions"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey(
-        "users.id"), nullable=False)
+    profile_id = Column(UUID(as_uuid=True), ForeignKey(
+        "profiles.id"), nullable=False)
     start_time = Column(TIMESTAMP(timezone=True), nullable=False)
     end_time = Column(TIMESTAMP(timezone=True))
     duration = Column(Integer)  # in minutes
@@ -65,7 +65,7 @@ class Session(Base):
         "activities.id"), nullable=True)
 
     # Relationships
-    user = relationship("User", back_populates="sessions")
+    profile = relationship("Profile", back_populates="sessions")
     chat_turns = relationship("ChatTurn", back_populates="session")
     topics = relationship(
         "Topic", secondary="session_topics", back_populates="sessions")
@@ -82,7 +82,7 @@ class ChatTurn(Base):
     session_id = Column(UUID(as_uuid=True), ForeignKey(
         "sessions.id"), nullable=False)
     timestamp = Column(TIMESTAMP(timezone=True), nullable=False)
-    speaker = Column(String, nullable=False)  # User/Assistant
+    speaker = Column(String, nullable=False)
     message = Column(Text, nullable=False)
     audio_url = Column(String)
     embedding = Column(Vector(1536))
@@ -164,8 +164,8 @@ class Medication(Base):
     __tablename__ = "medications"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey(
-        "users.id"), nullable=False)
+    profile_id = Column(UUID(as_uuid=True), ForeignKey(
+        "profiles.id"), nullable=False)
     name = Column(String, nullable=False)
     dosage = Column(String)
     frequency = Column(String)
@@ -178,7 +178,7 @@ class Medication(Base):
                         server_default=func.now(), onupdate=func.now())
 
     # Relationships
-    user = relationship("User", back_populates="medications")
+    profile = relationship("Profile", back_populates="medications")
     reminders = relationship("MedicationReminder", back_populates="medication")
 
 

@@ -19,8 +19,8 @@ pytest = "*"
 httpx = "*"
 typer = "*"
 sqlmodel = "*"
-pgvector = "*"
 supabase = "*"
+pgvector = "*"
 
 [dev-packages]
 

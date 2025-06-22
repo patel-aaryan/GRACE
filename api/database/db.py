@@ -46,7 +46,7 @@ def init_db():
     from sqlalchemy import text
 
     # Import all models here to ensure they're registered with Base.metadata
-    from .models import User, Caregiver, Session, ChatTurn, Topic, SessionTopic, Note, Activity, SessionActivity, Medication, MedicationReminder
+    from .models import Profile, Caregiver, Session, ChatTurn, Topic, SessionTopic, Note, Activity, SessionActivity, Medication, MedicationReminder
 
     # Try to create pgvector extension if available
     try:
