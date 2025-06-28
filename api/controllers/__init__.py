@@ -1,2 +1,5 @@
 # Empty __init__.py - no controllers to export
-__all__ = []
+from .profile_controller import ProfileController
+from .auth_controller import AuthController
+
+__all__ = ["ProfileController", "AuthController"]
