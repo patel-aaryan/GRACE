@@ -147,3 +147,144 @@ This can happen if you've already created tables manually. You can:
 3. Keep migrations small and focused on specific changes
 4. Test both upgrade and downgrade paths
 5. Add clear descriptions to migrations using the `-m` option
+
+# GRACE API
+
+## Row Level Security (RLS) Implementation
+
+This API implements comprehensive Row Level Security using Supabase and PostgreSQL to ensure users can only access their own data and caregivers can access data for profiles they manage.
+
+### Running the RLS Migration
+
+To enable RLS on your database, run the migration:
+
+```bash
+python -m alembic upgrade head
+```
+
+This will:
+
+- Enable RLS on all tables
+- Create policies ensuring users only see their own data
+- Allow caregivers to access data for profiles they manage
+- Allow service role to bypass RLS for admin operations
+
+### RLS Policy Overview
+
+#### Profiles Table
+
+- Users can view/update their own profile
+- Caregivers can view profiles they manage
+- Service role can access all profiles
+
+#### Sessions, Chat Turns, Notes, etc.
+
+- Users can only access data from their own sessions
+- Caregivers can access data from sessions of profiles they manage
+
+#### Medications
+
+- Users can manage their own medications
+- Caregivers can view medications for profiles they manage
+
+#### Activities & Topics
+
+- Public read access for authenticated users
+- These are shared resources
+
+### Using RLS in Your FastAPI Routes
+
+#### Basic Authentication
+
+```python
+from fastapi import Depends
+from core.auth import get_current_user_id
+from database.db import get_db
+
+@app.get("/profile")
+def get_profile(
+    user_id: str = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
+):
+    # Set auth context for RLS
+    db.execute(text("SELECT set_config('request.jwt.claims', :claims, true)"),
+               {"claims": f'{{"sub": "{user_id}", "role": "authenticated"}}'})
+
+    # Now queries will automatically filter by RLS policies
+    profile = db.query(Profile).filter(Profile.id == user_id).first()
+    return profile
+```
+
+#### Service Role Operations (Admin)
+
+```python
+@app.get("/admin/all-profiles")
+def get_all_profiles(db: Session = Depends(get_db)):
+    # Set service role to bypass RLS
+    db.execute(text("SELECT set_config('role', 'service_role', true)"))
+
+    # This will return all profiles regardless of user
+    profiles = db.query(Profile).all()
+    return profiles
+```
+
+#### Manual Context Setting
+
+```python
+from sqlalchemy import text
+
+def some_operation_with_auth(user_id: str):
+    db = SessionLocal()
+    try:
+        # Set auth context
+        db.execute(text("SELECT set_config('request.jwt.claims', :claims, true)"),
+                   {"claims": f'{{"sub": "{user_id}", "role": "authenticated"}}'})
+
+        # Your queries here will respect RLS
+        sessions = db.query(Session).all()  # Only user's sessions
+        return sessions
+    finally:
+        db.close()
+```
+
+### Environment Variables Required
+
+Make sure you have these environment variables set:
+
+```bash
+DATABASE_URL=postgresql://postgres:[password]@[host]/[database]
+SUPABASE_JWT_SECRET=your_supabase_jwt_secret
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+SUPABASE_URL=https://your-project.supabase.co
+```
+
+### Testing RLS
+
+You can test RLS policies directly in your database:
+
+```sql
+-- Test as regular user
+SELECT set_config('request.jwt.claims', '{"sub": "user-uuid-here", "role": "authenticated"}', true);
+SELECT * FROM profiles; -- Should only return user's profile
+
+-- Test as service role
+SELECT set_config('role', 'service_role', true);
+SELECT * FROM profiles; -- Should return all profiles
+```
+
+### Security Considerations
+
+1. **Always set auth context**: Every database operation should set the appropriate auth context
+2. **Use service role sparingly**: Only use service role for admin operations
+3. **Validate JWT tokens**: Always verify tokens before setting auth context
+4. **Test policies**: Regularly test your RLS policies to ensure they work as expected
+
+### Disabling RLS (Emergency)
+
+If you need to disable RLS temporarily:
+
+```bash
+python -m alembic downgrade -1
+```
+
+This will remove all RLS policies and disable RLS on all tables.
