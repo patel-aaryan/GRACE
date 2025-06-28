@@ -13,18 +13,13 @@ class Profile(Base):
     __tablename__ = "profiles"
 
     id = Column(UUID(as_uuid=True), primary_key=True, index=True)
-    email = Column(String, unique=True, index=True, nullable=False)
-    full_name = Column(String, index=True, nullable=True)
     dob = Column(Date)
-    phone_number = Column(String)
     preferred_speech_speed = Column(Float, default=1.0)
     preferred_avatar_type = Column(String, default="3D")
     accessibility_preferences = Column(JSONB, default={})
     caregiver_id = Column(UUID(as_uuid=True), ForeignKey(
         "caregivers.id"), nullable=True)
     last_login = Column(TIMESTAMP(timezone=True))
-    created_at = Column(TIMESTAMP(timezone=True),
-                        server_default=func.now(), nullable=False)
     updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(
     ), onupdate=func.now(), nullable=False)
 
