@@ -11,7 +11,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Check, HelpCircle, X } from "lucide-react";
 import Link from "next/link";
-import { MainLayout } from "@/components/layout/main-layout";
 
 // Example trivia questions
 const triviaQuestions = [
