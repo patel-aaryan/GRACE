@@ -21,7 +21,7 @@ class ProfileService:
     def create_profile(self, user_id: UUID, profile_data: ProfileCreate) -> Profile:
         """Create a new profile"""
         # Convert accessibility preferences to dict
-        accessibility_prefs = profile_data.accessibility_preferences.dict()
+        accessibility_prefs = profile_data.accessibility_preferences.model_dump()
 
         db_profile = Profile(
             id=user_id,
@@ -39,11 +39,11 @@ class ProfileService:
         if not db_profile:
             return None
 
-        update_data = profile_data.dict(exclude_unset=True)
+        update_data = profile_data.model_dump(exclude_unset=True)
 
         # Handle accessibility preferences separately
         if 'accessibility_preferences' in update_data:
-            update_data['accessibility_preferences'] = update_data['accessibility_preferences'].dict()
+            update_data['accessibility_preferences'] = update_data['accessibility_preferences']
 
         for field, value in update_data.items():
             setattr(db_profile, field, value)

@@ -17,7 +17,7 @@ class AuthController:
         """Get current user profile from JWT token"""
         try:
             return UserProfile(
-                id=current_user.sub,
+                id=current_user.id,
                 email=current_user.email,
                 role=current_user.role
             )
@@ -41,18 +41,4 @@ class AuthController:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Failed to access protected route: {str(e)}"
-            )
-
-    async def verify_token(self, current_user: JWTTokenPayload) -> dict:
-        """Verify if the token is valid"""
-        try:
-            return {
-                "valid": True,
-                "user_id": current_user.sub,
-                "email": current_user.email
-            }
-        except Exception as e:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Failed to verify token: {str(e)}"
             )

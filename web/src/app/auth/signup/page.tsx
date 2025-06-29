@@ -21,6 +21,8 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -44,12 +46,28 @@ export default function SignUpPage() {
       return;
     }
 
+    if (!username.trim()) {
+      setError("Username is required");
+      setIsLoading(false);
+      return;
+    }
+
+    if (username.length < 2) {
+      setError("Username must be at least 2 characters");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/api/auth-callback`,
+          data: {
+            username,
+            phone_number: phoneNumber || null,
+          },
         },
       });
 
@@ -136,6 +154,19 @@ export default function SignUpPage() {
             )}
 
             <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                type="text"
+                placeholder="Choose a username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -144,6 +175,18 @@ export default function SignUpPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phoneNumber">Phone Number (Optional)</Label>
+              <Input
+                id="phoneNumber"
+                type="tel"
+                placeholder="+1 (555) 123-4567"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
                 disabled={isLoading}
               />
             </div>

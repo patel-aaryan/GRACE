@@ -33,10 +33,7 @@ export async function GET(request: Request) {
 
           if (response.ok) {
             const result = await response.json();
-            if (result.profile_complete) {
-              // Profile exists and is complete, redirect to chat
-              return NextResponse.redirect(`${origin}/chat`);
-            }
+            if (result.profile_complete) return NextResponse.redirect(origin);
           }
         }
       } catch (error) {

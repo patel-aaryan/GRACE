@@ -10,7 +10,6 @@ sqlalchemy = "*"
 psycopg2 = "*"
 python-dotenv = "*"
 pydantic = "*"
-python-jose = {extras = ["cryptography"], version = "*"}
 passlib = {extras = ["bcrypt"], version = "*"}
 python-multipart = "*"
 alembic = "*"
@@ -21,6 +20,7 @@ typer = "*"
 sqlmodel = "*"
 supabase = "*"
 pgvector = "*"
+pyjwt = {extras = ["cryptography"], version = "*"}
 
 [dev-packages]
 

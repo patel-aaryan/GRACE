@@ -68,6 +68,7 @@ def get_db_with_auth(user_id: Optional[str] = None, role: str = "authenticated")
         db.close()
 
 
+@contextmanager
 def get_service_db() -> Generator[Session, None, None]:
     """
     Get a database session with service role privileges (bypasses RLS).

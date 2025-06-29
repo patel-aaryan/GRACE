@@ -49,7 +49,12 @@ export async function middleware(request: NextRequest) {
 
   // Redirect authenticated users away from auth pages
   if (request.nextUrl.pathname.startsWith("/auth/") && user) {
-    return NextResponse.redirect(new URL("/chat", request.url));
+    // Allow access to complete-profile for authenticated users
+    if (request.nextUrl.pathname === "/auth/complete-profile") {
+      return supabaseResponse;
+    }
+    // Redirect away from other auth pages (login, signup)
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return supabaseResponse;

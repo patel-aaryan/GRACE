@@ -101,26 +101,24 @@ export default function CompleteProfilePage() {
         accessibility_preferences: accessibilityPrefs,
       };
 
-      // Call your backend API to create/update the profile
+      const session = await supabase.auth.getSession();
+      const token = session.data.session?.access_token;
+      // Call your backend API to update the profile
       const response = await fetch("/api/profile", {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${
-            (
-              await supabase.auth.getSession()
-            ).data.session?.access_token
-          }`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(profileData),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to create profile");
+        throw new Error("Failed to update profile");
       }
 
-      // Redirect to chat after successful profile creation
-      router.push("/chat");
+      // Redirect to chat after successful profile update
+      router.push("/");
     } catch (error) {
       setError(
         error instanceof Error ? error.message : "An unexpected error occurred"
@@ -143,7 +141,7 @@ export default function CompleteProfilePage() {
       <Card className="w-full max-w-2xl">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
-            Complete Your Profile
+            {user && <>Hello {user.user_metadata?.username || "there"}! 👋</>}
           </CardTitle>
           <CardDescription className="text-center">
             Help us personalize your GRACE experience

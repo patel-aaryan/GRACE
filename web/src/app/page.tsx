@@ -52,7 +52,7 @@ export default function Home() {
                       size="lg"
                       className="font-medium rounded-full px-10 py-6"
                     >
-                      <Link href="/auth/login">Sign In</Link>
+                      <Link href="/auth/signup">Sign Up</Link>
                     </Button>
                   </div>
                 </div>

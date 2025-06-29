@@ -1,29 +1,25 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from routes import auth_route, profile_route
 from core.config import settings
-from routes import auth, profile
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    openapi_url=f"{settings.API_V1_STR}/openapi.json"
+    openapi_url="/openapi.json"
 )
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",  # Next.js dev server
-        "http://localhost:3001",  # Alternative port
-        # Add your production domain here
-    ],
+    allow_origins=["http://localhost:3000", "http://localhost:3001"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Include routers
-app.include_router(auth.router)
-app.include_router(profile.router)
+app.include_router(auth_route.router)
+app.include_router(profile_route.router)
 
 
 @app.get("/")

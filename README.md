@@ -142,7 +142,7 @@ GRACE/
 4. **Run database migrations**
 
    ```bash
-   cd api && python scripts/migrate.py
+   cd api && python run.py migrate
    ```
 
 5. **Start development servers**

@@ -1,68 +1,72 @@
-import os
 from fastapi import HTTPException, Depends, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from jose import JWTError, jwt
+from jose import jwt, JWTError
+from jose.exceptions import ExpiredSignatureError, JWTClaimsError
 from typing import Optional, Dict, Any, Generator
 from sqlalchemy.orm import Session
-from database.db import get_db_with_auth, get_service_db
 from core.config import settings
+from database.db import get_db_with_auth, get_service_db
 import logging
 
 logger = logging.getLogger(__name__)
 
 # Security scheme for Bearer token
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)
 
 
-class JWTTokenPayload:
-    """JWT token payload from Supabase"""
+class User:
+    """Simplified user model from JWT payload"""
 
     def __init__(self, payload: Dict[str, Any]):
-        self.sub: str = payload.get("sub", "")  # User ID
+        self.id: str = payload.get("sub", "")
         self.email: Optional[str] = payload.get("email")
-        self.role: Optional[str] = payload.get("role")
-        self.aud: Optional[str] = payload.get("aud")
-        self.exp: Optional[int] = payload.get("exp")
-        self.iat: Optional[int] = payload.get("iat")
-        self.raw_payload = payload
+        self.role: str = payload.get("role", "authenticated")
+        self.payload = payload
 
 
-def get_bearer_token(credentials: HTTPAuthorizationCredentials = Depends(security)) -> str:
-    """Extract bearer token from Authorization header"""
-    return credentials.credentials
-
-
-def verify_token(token: str) -> JWTTokenPayload:
-    """Verify JWT token using Supabase JWT secret"""
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> User:
+    """
+    Verify JWT token and return user information.
+    This is the main authentication dependency you should use.
+    """
     try:
         payload = jwt.decode(
-            token,
+            credentials.credentials,
             settings.SUPABASE_JWT_SECRET,
             algorithms=[settings.ALGORITHM],
             audience="authenticated"
         )
-        return JWTTokenPayload(payload)
-    except JWTError as e:
+
+        if not payload.get("sub"):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid user ID in token"
+            )
+
+        return User(payload)
+
+    except ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Could not validate credentials: {str(e)}",
+            detail="Token has expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
 
-def require_user(token: str = Depends(get_bearer_token)) -> JWTTokenPayload:
-    """Dependency to require authenticated user"""
-    return verify_token(token)
+def get_current_user_id(current_user: User = Depends(get_current_user)) -> str:
+    """Get the current user's ID - convenience function"""
+    return current_user.id
 
 
-def get_current_user_id(current_user: JWTTokenPayload = Depends(require_user)) -> str:
-    """Get the current user's ID from the JWT token"""
-    if not current_user.sub:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid user ID in token"
-        )
-    return current_user.sub
+# Backwards compatibility aliases
+require_user = get_current_user  # Alias for backwards compatibility
+JWTTokenPayload = User  # Alias for backwards compatibility
 
 
 def get_current_user_email(current_user: JWTTokenPayload = Depends(require_user)) -> Optional[str]:
@@ -82,7 +86,7 @@ def verify_jwt_token(credentials: HTTPAuthorizationCredentials = Depends(securit
         payload = jwt.decode(
             token,
             settings.SUPABASE_JWT_SECRET,
-            algorithms=["HS256"],
+            algorithms=[settings.ALGORITHM],
             audience="authenticated"
         )
 
@@ -224,7 +228,7 @@ def check_user_access_to_profile(db: Session, user_id: str, profile_id: str) -> 
         return True
 
     # Check if user is a caregiver for this profile
-    if profile.caregiver_id:
+    if profile.caregiver_id is not None:
         caregiver = db.query(Caregiver).filter(
             Caregiver.id == profile.caregiver_id).first()
         if caregiver and str(caregiver.id) == user_id:
