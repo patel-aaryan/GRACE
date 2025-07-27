@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from database.models import Profile
-from typing import Optional, List
+from typing import Optional
 from uuid import UUID
 
 
@@ -13,13 +13,6 @@ class ProfileDatastore:
     def get_by_id(self, user_id: UUID) -> Optional[Profile]:
         """Get a profile by user ID"""
         return self.db.query(Profile).filter(Profile.id == user_id).first()
-
-    def create(self, profile: Profile) -> Profile:
-        """Create a new profile"""
-        self.db.add(profile)
-        self.db.commit()
-        self.db.refresh(profile)
-        return profile
 
     def update(self, profile: Profile) -> Profile:
         """Update existing profile"""
@@ -41,6 +34,4 @@ class ProfileDatastore:
         """Check if profile exists"""
         return self.db.query(Profile).filter(Profile.id == user_id).first() is not None
 
-    def get_all(self, limit: int = 100, offset: int = 0) -> List[Profile]:
-        """Get all profiles with pagination"""
-        return self.db.query(Profile).offset(offset).limit(limit).all()
+

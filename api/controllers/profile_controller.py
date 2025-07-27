@@ -2,7 +2,6 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from services.profile_service import ProfileService
 from schemas.profile import (
-    ProfileCreate,
     ProfileUpdate,
     ProfileResponse,
     ProfileStatusResponse
@@ -53,26 +52,7 @@ class ProfileController:
                 detail=f"Failed to get profile: {str(e)}"
             )
 
-    async def create_profile(self, user_id: UUID, profile_data: ProfileCreate) -> ProfileResponse:
-        """Create a new profile for the current user"""
-        try:
-            # Check if profile already exists
-            if self.profile_service.profile_exists(user_id):
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Profile already exists"
-                )
 
-            profile = self.profile_service.create_profile(
-                user_id, profile_data)
-            return profile
-        except HTTPException:
-            raise
-        except Exception as e:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Failed to create profile: {str(e)}"
-            )
 
     async def update_profile(self, user_id: UUID, profile_data: ProfileUpdate) -> ProfileResponse:
         """Update current user's profile"""

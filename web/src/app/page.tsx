@@ -1,9 +1,26 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { HomeBackground } from "@/components/backgrounds";
+import { useUser } from "@/hooks/use-user";
 
 export default function Home() {
+  const { user, isLoading } = useUser();
+
+  const getUserGreeting = () => {
+    if (isLoading || !user) return "Hi I'm Grace!";
+
+    const username = user.user_metadata?.username;
+    if (username) return `Hi ${username}, I'm Grace!`;
+
+    const fullName = user.user_metadata?.full_name || user.user_metadata?.name;
+    if (fullName) return `Hi ${fullName}, I'm Grace!`;
+
+    return "Hi I'm Grace!";
+  };
+
   return (
     <>
       <HomeBackground />
@@ -15,7 +32,7 @@ export default function Home() {
                 <div className="space-y-8 max-w-xl">
                   <div>
                     <h2 className="text-2xl font-semibold mb-2">
-                      Hi I&apos;m Grace!
+                      {getUserGreeting()}
                     </h2>
                     <p className="text-lg text-gray-400">
                       <span className="font-medium">G</span>uided

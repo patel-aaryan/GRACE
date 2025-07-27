@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import auth_route, profile_route
+from routes import profile_route
 from core.config import settings
 
 app = FastAPI(
@@ -18,7 +18,6 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(auth_route.router)
 app.include_router(profile_route.router)
 
 

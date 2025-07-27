@@ -11,14 +11,6 @@ class AccessibilityPreferences(BaseModel):
     simplified_interface: bool = False
 
 
-class ProfileCreate(BaseModel):
-    dob: date
-    preferred_speech_speed: float = Field(default=1.0, ge=0.5, le=2.0)
-    preferred_avatar_type: str = Field(default="3D")
-    accessibility_preferences: AccessibilityPreferences = Field(
-        default_factory=AccessibilityPreferences)
-
-
 class ProfileUpdate(BaseModel):
     dob: Optional[date] = None
     preferred_speech_speed: Optional[float] = Field(None, ge=0.5, le=2.0)

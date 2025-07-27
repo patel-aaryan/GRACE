@@ -1,10 +1,9 @@
 from sqlalchemy.orm import Session
 from database.models import Profile
 from datastores.profile_datastore import ProfileDatastore
-from schemas.profile import ProfileCreate, ProfileUpdate
+from schemas.profile import ProfileUpdate
 from typing import Optional
 from uuid import UUID
-import uuid
 
 
 class ProfileService:
@@ -17,21 +16,6 @@ class ProfileService:
     def get_profile(self, user_id: UUID) -> Optional[Profile]:
         """Get a profile by user ID"""
         return self.profile_datastore.get_by_id(user_id)
-
-    def create_profile(self, user_id: UUID, profile_data: ProfileCreate) -> Profile:
-        """Create a new profile"""
-        # Convert accessibility preferences to dict
-        accessibility_prefs = profile_data.accessibility_preferences.model_dump()
-
-        db_profile = Profile(
-            id=user_id,
-            dob=profile_data.dob,
-            preferred_speech_speed=profile_data.preferred_speech_speed,
-            preferred_avatar_type=profile_data.preferred_avatar_type,
-            accessibility_preferences=accessibility_prefs
-        )
-
-        return self.profile_datastore.create(db_profile)
 
     def update_profile(self, user_id: UUID, profile_data: ProfileUpdate) -> Optional[Profile]:
         """Update an existing profile"""
