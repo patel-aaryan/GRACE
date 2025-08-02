@@ -9,7 +9,6 @@ DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://localhost/grace")
 # Supabase
 SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET", "")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
-SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 
 # API Settings
 PROJECT_NAME = "GRACE API"
@@ -23,7 +22,6 @@ class Settings:
     # Supabase
     SUPABASE_JWT_SECRET: str = SUPABASE_JWT_SECRET
     SUPABASE_SERVICE_ROLE_KEY: str = SUPABASE_SERVICE_ROLE_KEY
-    SUPABASE_URL: str = SUPABASE_URL
 
     # API Settings
     PROJECT_NAME: str = PROJECT_NAME
